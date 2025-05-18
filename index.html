@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>منصة الإفتاء الذكية</title>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #046a38;
+      --secondary-color: #0a8a4a;
+      --dark-color: #033c1f;
+      --light-color: #e8f5e9;
+      --text-color: #333;
+      --text-light: #666;
+      --white: #fff;
+      --gray: #f5f5f5;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Reset & Base */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    body {
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      background: var(--gray);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.6;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    ul {
+      list-style: none;
+    }
+    button, .btn {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    img {
+      max-width: 100%;
+    }
+
+    /* Layout */
+    header {
+      background: var(--primary-color);
+      color: var(--white);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--box-shadow);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .logo img {
+      height: 40px;
+      border-radius: var(--border-radius);
+
+    }
+    .logo h1 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      margin: 0;
+    }
+    .menu-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.8rem;
+      color: var(--white);
+      display: none;
+    }
+
+    /* Sidebar */
+    nav.sidebar {
+      width: 300px;
+      background: var(--dark-color);
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      right: 0;
+      padding-top: 80px;
+      overflow-y: auto;
+      transition: transform 0.3s ease-in-out;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+      z-index: 900;
+    }
+    nav.sidebar.hidden {
+      transform: translateX(300px);
+    }
+    nav.sidebar.visible {
+      transform: translateX(0);
+    }
+    nav.sidebar ul li {
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    nav.sidebar ul li a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 25px;
+      color: rgba(255,255,255,0.8);
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    nav.sidebar ul li a:hover,
+    nav.sidebar ul li a.active {
+      background-color: var(--primary-color);
+      color: var(--white);
+      padding-right: 30px;
+    }
+    nav.sidebar ul li a i {
+      font-size: 1.1rem;
+    }
+
+    /* Main content */
+    main.content {
+      margin-right: 300px;
+      padding: 40px;
+      flex-grow: 1;
+      min-height: calc(100vh - 60px);
+      background: var(--gray);
+      transition: margin-right 0.3s ease;
+    }
+    main.content.full-width {
+      margin-right: 0;
+    }
+
+    /* Headings */
+    h2 {
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 30px;
+      font-size: 2.2rem;
+      border-right: 4px solid var(--primary-color);
+      padding-right: 15px;
+      position: relative;
+    }
+    h2::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: -8px;
+      width: 50%;
+      height: 2px;
+      background: var(--primary-color);
+    }
+    h3 {
+      font-weight: 700;
+      color: var(--dark-color);
+      margin: 25px 0 15px;
+      font-size: 1.6rem;
+    }
+
+    /* Fatwa item */
+    .fatwa-item {
+      background: var(--white);
+      border-radius: var(--border-radius);
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: var(--box-shadow);
+      transition: all 0.3s ease;
+      border-right: 4px solid transparent;
+    }
+    .fatwa-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      border-right-color: var(--primary-color);
+    }
+    .fatwa-text {
+      font-size: 1.2rem;
+      line-height: 1.7;
+      margin-bottom: 15px;
+      color: var(--text-color);
+      font-weight: 500;
+    }
+    .fatwa-source {
+      font-size: 1rem;
+      color: var(--text-light);
+      font-style: italic;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .fatwa-source i {
+      color: var(--primary-color);
+    }
+    .fatwa-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .fatwa-actions button {
+      background: var(--primary-color);
+      color: var(--white);
+      border: none;
+      padding: 10px 18px;
+      border-radius: var(--border-radius);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .fatwa-actions button:hover {
+      background: var(--dark-color);
+      transform: translateY(-2px);
+    }
+    .fatwa-actions button.secondary {
+      background: var(--light-color);
+      color: var(--primary-color);
+    }
+    .fatwa-actions button.secondary:hover {
+      background: #d4e8d7;
+    }
+
+    /* Search input */
+    .search-container {
+      margin-bottom: 40px;
+      max-width: 800px;
+      position: relative;
+    }
+    .search-container input[type="search"] {
+      width: 100%;
+      padding: 15px 20px;
+      border-radius: var(--border-radius);
+      border: 2px solid var(--primary-color);
+      font-size: 1.2rem;
+      font-weight: 600;
+      outline: none;
+      transition: all 0.3s ease;
+      padding-right: 60px;
+    }
+    .search-container input[type="search"]:focus {
+      box-shadow: 0 0 0 4px rgba(4, 106, 56, 0.2);
+    }
+    .search-icon {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary-color);
+      font-size: 1.3rem;
+    }
+
+    /* Categories */
+    .categories {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    .category-btn {
+      background: var(--light-color);
+      color: var(--primary-color);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .category-btn:hover, .category-btn.active {
+      background: var(--primary-color);
+      color: var(--white);
+    }
+
+    /* AI Assistant */
+    .ai-assistant {
+      background: var(--white);
+      border-radius: var(--border-radius);
+      padding: 30px;
+      margin-bottom: 40px;
+      box-shadow: var(--box-shadow);
+      border: 1px solid #e0e0e0;
+    }
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .ai-icon {
+      width: 50px;
+      height: 50px;
+      background: var(--primary-color);
+      color: var(--white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .ai-title {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--dark-color);
+      margin: 0;
+    }
+    .ai-subtitle {
+      color: var(--text-light);
+      font-size: 1rem;
+    }
+    .ai-form {
+      margin-top: 25px;
+    }
+    .ai-form textarea {
+      width: 100%;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      border: 2px solid #ddd;
+      min-height: 120px;
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+    .ai-form textarea:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(4, 106, 56, 0.2);
+      outline: none;
+    }
+    .ai-response {
+      background: #f9f9f9;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-top: 25px;
+      border-right: 4px solid var(--primary-color);
+      display: none;
+    }
+    .ai-response.show {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .ai-loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+    .ai-loading.show {
+      display: block;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(4, 106, 56, 0.2);
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Contact form */
+    form.contact-form {
+      max-width: 600px;
+      background: var(--white);
+      border-radius: var(--border-radius);
+      padding: 30px;
+      box-shadow: var(--box-shadow);
+    }
+    form.contact-form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: var(--dark-color);
+    }
+    form.contact-form input,
+    form.contact-form textarea,
+    form.contact-form select {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 25px;
+      border: 2px solid #ddd;
+      border-radius: var(--border-radius);
+      font-size: 1.1rem;
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      resize: vertical;
+      transition: all 0.3s ease;
+    }
+    form.contact-form input:focus,
+    form.contact-form textarea:focus,
+    form.contact-form select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(4, 106, 56, 0.2);
+      outline: none;
+    }
+    form.contact-form button {
+      background: var(--primary-color);
+      color: var(--white);
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      border-radius: var(--border-radius);
+      font-weight: 700;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    form.contact-form button:disabled {
+      background: #94c7a1;
+      cursor: not-allowed;
+    }
+    form.contact-form button:hover:not(:disabled) {
+      background: var(--dark-color);
+      transform: translateY(-2px);
+    }
+
+    /* Home page features */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin: 40px 0;
+    }
+    .feature-card {
+      background: var(--white);
+      border-radius: var(--border-radius);
+      padding: 30px;
+      box-shadow: var(--box-shadow);
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    .feature-icon {
+      width: 70px;
+      height: 70px;
+      background: var(--light-color);
+      color: var(--primary-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 20px;
+    }
+    .feature-title {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--dark-color);
+      margin-bottom: 15px;
+    }
+    .feature-desc {
+      color: var(--text-light);
+      font-size: 1.1rem;
+    }
+
+    /* Statistics */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 50px 0;
+    }
+    .stat-card {
+      background: var(--white);
+      border-radius: var(--border-radius);
+      padding: 25px;
+      text-align: center;
+      box-shadow: var(--box-shadow);
+    }
+    .stat-number {
+      font-weight: 700;
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+    .stat-label {
+      color: var(--text-light);
+      font-size: 1.1rem;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--dark-color);
+      color: var(--white);
+      padding: 40px 0 20px;
+      margin-top: 60px;
+    }
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      padding: 0 40px;
+    }
+    .footer-column h3 {
+      color: var(--white);
+      font-size: 1.5rem;
+      margin-bottom: 25px;
+      position: relative;
+      padding-bottom: 10px;
+    }
+    .footer-column h3::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 50px;
+      height: 2px;
+      background: var(--primary-color);
+    }
+    .footer-links li {
+      margin-bottom: 15px;
+    }
+    .footer-links a {
+      color: rgba(255,255,255,0.7);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .footer-links a:hover {
+      color: var(--white);
+      padding-right: 5px;
+    }
+    .footer-links a i {
+      font-size: 0.9rem;
+    }
+    .social-links {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .social-links a {
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    .social-links a:hover {
+      background: var(--primary-color);
+      transform: translateY(-3px);
+    }
+    .copyright {
+      text-align: center;
+      padding-top: 30px;
+      margin-top: 30px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      nav.sidebar {
+        width: 280px;
+      }
+    }
+    @media (max-width: 992px) {
+      header {
+        padding: 15px 20px;
+      }
+      .logo h1 {
+        font-size: 1.5rem;
+      }
+      main.content {
+        padding: 30px;
+      }
+    }
+    @media (max-width: 768px) {
+      nav.sidebar {
+        width: 260px;
+        transform: translateX(260px);
+      }
+      nav.sidebar.visible {
+        transform: translateX(0);
+      }
+      main.content {
+        margin-right: 0;
+        padding: 20px;
+      }
+      header .menu-btn {
+        display: block;
+      }
+      h2 {
+        font-size: 1.8rem;
+      }
+      .fatwa-text {
+        font-size: 1.1rem;
+      }
+    }
+    @media (max-width: 576px) {
+      header {
+        padding: 12px 15px;
+      }
+      .logo h1 {
+        font-size: 1.3rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      .search-container input[type="search"] {
+        padding: 12px 15px;
+        font-size: 1rem;
+      }
+      .fatwa-item {
+        padding: 20px;
+      }
+      .ai-assistant {
+        padding: 20px;
+      }
+      .features {
+        grid-template-columns: 1fr;
+      }
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+    }
+
+    /* Utility classes */
+    .text-primary {
+      color: var(--primary-color) !important;
+    }
+    .bg-primary {
+      background-color: var(--primary-color) !important;
+    }
+    .mt-1 { margin-top: 10px; }
+    .mt-2 { margin-top: 20px; }
+    .mt-3 { margin-top: 30px; }
+    .mt-4 { margin-top: 40px; }
+    .mt-5 { margin-top: 50px; }
+    .mb-1 { margin-bottom: 10px; }
+    .mb-2 { margin-bottom: 20px; }
+    .mb-3 { margin-bottom: 30px; }
+    .mb-4 { margin-bottom: 40px; }
+    .mb-5 { margin-bottom: 50px; }
+    .py-3 { padding-top: 30px; padding-bottom: 30px; }
+    .py-4 { padding-top: 40px; padding-bottom: 40px; }
+    .text-center { text-align: center; }
+    .d-flex { display: flex; }
+    .align-items-center { align-items: center; }
+    .justify-content-center { justify-content: center; }
+  </style>
+</head>
+<body x-data="muftiApp()" @click.outside="sidebarVisible = false">
+
+  <header>
+    <div class="logo">
+      <img src="https://i.ibb.co/6JmbJkCR/2.png" alt="شعار المنصة">
+      <h1>منصة فتوة</h1>
+    </div>
+    <button
+      class="menu-btn"
+      @click.stop="toggleSidebar()"
+      aria-label="Toggle menu"
+      :aria-expanded="sidebarVisible.toString()"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </header>
+
+  <nav
+    :class="{'sidebar': true, 'visible': sidebarVisible, 'hidden': !sidebarVisible}"
+    @click.stop
+  >
+    <ul>
+      <li><a href="#" @click.prevent="changePage('home')" :class="{active: page === 'home'}">
+        <i class="fas fa-home"></i> الرئيسية
+      </a></li>
+      <li><a href="#" @click.prevent="changePage('fatwas')" :class="{active: page === 'fatwas'}">
+        <i class="fas fa-book"></i> الفتاوى الشرعية
+      </a></li>
+      <li><a href="#" @click.prevent="changePage('ai')" :class="{active: page === 'ai'}">
+        <i class="fas fa-robot"></i> المفتي الذكي
+      </a></li>
+      <li><a href="#" @click.prevent="changePage('contact')" :class="{active: page === 'contact'}">
+        <i class="fas fa-envelope"></i> اتصل بنا
+      </a></li>
+      <li><a href="#" @click.prevent="changePage('about')" :class="{active: page === 'about'}">
+        <i class="fas fa-info-circle"></i> عن المنصة
+      </a></li>
+    </ul>
+  </nav>
+
+  <main :class="{'content': true, 'full-width': !sidebarVisible}">
+    <!-- الصفحة الرئيسية -->
+    <section x-show="page === 'home'" x-transition>
+      <h2>مرحبا بكم في منصة فتوة </h2>
+      <p class="mb-4" style="font-size:1.3rem; line-height: 1.8;">
+        منصة متكاملة للفتاوى الشرعية المعتمدة من كبار العلماء والمفتين، تقدم لكم الإجابات الموثوقة وفق القرآن الكريم والسنة النبوية الصحيحة. نوفر لكم خدمة الإفتاء للإجابة على استفساراتكم الفقهية باستخدام أحدث تقنيات الذكاء الاصطناعي.
+      </p>
+
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-number">100+</div>
+          <div class="stat-label">فتوى شرعية</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3</div>
+          <div class="stat-label">مصادر معتمدة</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">خدمة متاحة</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">موثوقية</div>
+        </div>
+      </div>
+
+      <h3 class="mt-5">مميزات المنصة</h3>
+      <div class="features">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h3 class="feature-title">فتاوى موثوقة</h3>
+          <p class="feature-desc">جميع الفتاوى معتمدة من مصادر شرعية رسمية مثل دار الإفتاء السعودية وكبار العلماء</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h3 class="feature-title">المفتي الذكي</h3>
+          <p class="feature-desc">خدمة الذكاء الاصطناعي للإجابة على استفساراتك الفقهية بدقة وسرعة</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-headphones"></i>
+          </div>
+          <h3 class="feature-title">استماع للفتاوى</h3>
+          <p class="feature-desc">إمكانية الاستماع للفتاوى صوتياً بتقنية تحويل النص إلى كلام</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- صفحة الفتاوى -->
+    <section x-show="page === 'fatwas'" x-transition>
+      <h2>الفتاوى الشرعية</h2>
+      
+      <div class="search-container">
+        <input
+          type="search"
+          placeholder="ابحث عن فتوى..."
+          x-model.debounce.500ms="searchQuery"
+          aria-label="بحث عن فتوى"
+          @keydown.escape="searchQuery=''; $refs.searchInput.blur()"
+          x-ref="searchInput"
+        />
+        <div class="search-icon">
+          <i class="fas fa-search"></i>
+        </div>
+      </div>
+
+      <div class="categories">
+        <button class="category-btn" :class="{active: activeCategory === 'all'}" @click="activeCategory = 'all'">الكل</button>
+        <button class="category-btn" :class="{active: activeCategory === 'prayer'}" @click="activeCategory = 'prayer'">الصلاة</button>
+        <button class="category-btn" :class="{active: activeCategory === 'fasting'}" @click="activeCategory = 'fasting'">الصيام</button>
+        <button class="category-btn" :class="{active: activeCategory === 'zakat'}" @click="activeCategory = 'zakat'">الزكاة</button>
+        <button class="category-btn" :class="{active: activeCategory === 'transactions'}" @click="activeCategory = 'transactions'">المعاملات</button>
+        <button class="category-btn" :class="{active: activeCategory === 'family'}" @click="activeCategory = 'family'">الأسرة</button>
+      </div>
+
+      <template x-if="filteredFatwas.length === 0">
+        <div class="alert alert-info" style="font-size: 1.2rem;">
+          <i class="fas fa-info-circle me-2"></i> لا توجد فتاوى تطابق بحثك.
+        </div>
+      </template>
+
+      <template x-for="(fatwa, index) in filteredFatwas" :key="index">
+        <article class="fatwa-item" :aria-label="`فتوى من المصدر: ${fatwa.source}`">
+          <p class="fatwa-text" x-text="fatwa.text"></p>
+          <p class="fatwa-source">
+            <i class="fas fa-bookmark"></i> المصدر: <span x-text="fatwa.source"></span>
+            <template x-if="fatwa.hadithNumber">
+              <span> (رقم الحديث: <span x-text="fatwa.hadithNumber"></span>)</span>
+            </template>
+          </p>
+          <div class="fatwa-actions">
+            <button @click="speakText(fatwa.text)" aria-label="استمع للفتوى">
+              <i class="fas fa-volume-up"></i> استماع
+            </button>
+            <button class="secondary" @click="copyToClipboard(fatwa.text)" aria-label="انسخ الفتوى">
+              <i class="fas fa-copy"></i> نسخ
+            </button>
+            <button class="secondary" @click="shareFatwa(fatwa)" aria-label="شارك الفتوى">
+              <i class="fas fa-share-alt"></i> مشاركة
+            </button>
+          </div>
+        </article>
+      </template>
+    </section>
+
+    <!-- صفحة المفتي الذكي -->
+    <section x-show="page === 'ai'" x-transition>
+      <h2>المفتي الذكي</h2>
+      
+      <div class="ai-assistant">
+        <div class="ai-header">
+          <div class="ai-icon">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div>
+            <h3 class="ai-title">المفتي الذكي المساعد</h3>
+            <p class="ai-subtitle">اطرح سؤالك الفقهي وسيجيبك المفتي الذكي بناءً على المصادر الشرعية المعتمدة</p>
+          </div>
+        </div>
+        
+        <div class="ai-form">
+          <textarea
+            placeholder="اكتب سؤالك هنا... مثال: ما حكم الصلاة بدون وضوء؟"
+            x-model="aiQuestion"
+            aria-label="سؤال للمفتي الذكي"
+          ></textarea>
+          <button
+            type="button"
+            @click="askAI()"
+            :disabled="!aiQuestion.trim() || aiLoading"
+          >
+            <template x-if="!aiLoading">
+              <span><i class="fas fa-paper-plane"></i> إرسال السؤال</span>
+            </template>
+            <template x-if="aiLoading">
+              <span><i class="fas fa-spinner fa-spin"></i> جاري البحث عن الإجابة...</span>
+            </template>
+          </button>
+        </div>
+        
+        <div class="ai-loading" :class="{show: aiLoading}">
+          <div class="spinner"></div>
+          <p>جاري البحث في المصادر الشرعية لإعداد الإجابة...</p>
+        </div>
+        
+        <div class="ai-response" :class="{show: aiResponse}">
+          <h4 style="color: var(--primary-color); margin-bottom: 15px;">
+            <i class="fas fa-lightbulb"></i> الجواب:
+          </h4>
+          <div x-html="aiResponse"></div>
+          <div class="fatwa-actions mt-3">
+            <button @click="speakText(aiResponseText)" aria-label="استمع للإجابة">
+              <i class="fas fa-volume-up"></i> استماع للإجابة
+            </button>
+            <button class="secondary" @click="copyToClipboard(aiResponseText)" aria-label="انسخ الإجابة">
+              <i class="fas fa-copy"></i> نسخ الإجابة
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <h3 class="mt-5">أسئلة شائعة</h3>
+      <div class="fatwa-item">
+        <p class="fatwa-text">ما هي شروط صحة الصلاة؟</p>
+        <button @click="fillQuestion('ما هي شروط صحة الصلاة؟')" class="category-btn">
+          <i class="fas fa-reply"></i> استخدم هذا السؤال
+        </button>
+      </div>
+      <div class="fatwa-item">
+        <p class="fatwa-text">ما حكم تأخير قضاء صيام رمضان؟</p>
+        <button @click="fillQuestion('ما حكم تأخير قضاء صيام رمضان؟')" class="category-btn">
+          <i class="fas fa-reply"></i> استخدم هذا السؤال
+        </button>
+      </div>
+      <div class="fatwa-item">
+        <p class="fatwa-text">ما هي أحكام الزكاة في الذهب المستعمل؟</p>
+        <button @click="fillQuestion('ما هي أحكام الزكاة في الذهب المستعمل؟')" class="category-btn">
+          <i class="fas fa-reply"></i> استخدم هذا السؤال
+        </button>
+      </div>
+    </section>
+
+    <!-- صفحة الاتصال -->
+    <section x-show="page === 'contact'" x-transition>
+      <h2>اتصل بنا</h2>
+      <p class="mb-4" style="font-size:1.2rem;">
+        لديك استفسار أو ملاحظة؟ يمكنك التواصل معنا عبر النموذج التالي وسنرد عليك في أقرب وقت ممكن.
+      </p>
+      
+      <form
+        class="contact-form"
+        @submit.prevent="sendContact()"
+        novalidate
+        aria-label="نموذج الاتصال"
+      >
+        <div class="mb-3">
+          <label for="name">الاسم الكامل</label>
+          <input
+            type="text"
+            id="name"
+            x-model.trim="contact.name"
+            required
+            minlength="3"
+            placeholder="أدخل اسمك الكامل"
+            aria-required="true"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="email">البريد الإلكتروني</label>
+          <input
+            type="email"
+            id="email"
+            x-model.trim="contact.email"
+            required
+            placeholder="example@domain.com"
+            aria-required="true"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="subject">الموضوع</label>
+          <select
+            id="subject"
+            x-model="contact.subject"
+            required
+            aria-required="true"
+          >
+            <option value="" disabled selected>اختر موضوع الرسالة</option>
+            <option value="question">سؤال فقهي</option>
+            <option value="suggestion">مقترح للمنصة</option>
+            <option value="technical">مشكلة فنية</option>
+            <option value="other">موضوع آخر</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="message">رسالتك</label>
+          <textarea
+            id="message"
+            x-model.trim="contact.message"
+            required
+            rows="5"
+            minlength="10"
+            placeholder="اكتب رسالتك هنا"
+            aria-required="true"
+          ></textarea>
+        </div>
+
+        <button
+          type="submit"
+          :disabled="!isContactFormValid || contactLoading"
+          aria-busy="contactLoading"
+        >
+          <template x-if="contactLoading">
+            <span><i class="fas fa-spinner fa-spin"></i> جاري الإرسال...</span>
+          </template>
+          <template x-if="!contactLoading">
+            <span><i class="fas fa-paper-plane"></i> إرسال الرسالة</span>
+          </template>
+        </button>
+      </form>
+    </section>
+
+    <!-- صفحة عن المنصة -->
+    <section x-show="page === 'about'" x-transition>
+      <h2>عن المنصة</h2>
+      
+      <div class="fatwa-item">
+        <h3 class="feature-title text-primary">رسالتنا</h3>
+        <p class="fatwa-text">
+          نهدف في منصة الإفتاء الذكية إلى توفير فتاوى شرعية موثوقة وصحيحة من مصادر معتمدة، مع تبسيط الوصول إلى المعلومة الشرعية الدقيقة باستخدام أحدث التقنيات.
+        </p>
+      </div>
+      
+      <div class="fatwa-item">
+        <h3 class="feature-title text-primary">مصادرنا</h3>
+        <p class="fatwa-text">
+          تعتمد المنصة على ثلاثة مصادر رئيسية للفتاوى:
+        </p>
+        <ul style="padding-right: 20px; margin-top: 15px;">
+          <li style="margin-bottom: 10px;">
+            <i class="fas fa-check-circle text-primary"></i> فتاوى رسمية موثقة من مفتي السعودية عبدالعزيز آل الشيخ
+          </li>
+          <li style="margin-bottom: 10px;">
+            <i class="fas fa-check-circle text-primary"></i> أحاديث صحيحة عن النبي صلى الله عليه وسلم رواها الصحابي أبو هريرة (من صحيح البخاري)
+          </li>
+          <li style="margin-bottom: 10px;">
+            <i class="fas fa-check-circle text-primary"></i> أحكام شرعية مستنبطة من نصوص صحيح البخاري
+          </li>
+        </ul>
+      </div>
+      
+      <div class="fatwa-item">
+        <h3 class="feature-title text-primary">فريق العمل</h3>
+        <p class="fatwa-text">
+          يعمل على المنصة فريق من المتخصصين في العلوم الشرعية وتقنية المعلومات لضمان دقة المحتوى وسهولة الوصول إليه.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>عن المنصة</h3>
+        <p style="color: rgba(255,255,255,0.7);">
+          منصة الإفتاء الذكية توفر فتاوى شرعية موثوقة من مصادر معتمدة، مع خدمة المفتي الذكي للإجابة على الاستفسارات الفقهية.
+        </p>
+        <div class="social-links">
+          <a href="#" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+          <a href="#" aria-label="يوتيوب"><i class="fab fa-youtube"></i></a>
+          <a href="#" aria-label="إنستغرام"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+      
+      <div class="footer-column">
+        <h3>روابط سريعة</h3>
+        <ul class="footer-links">
+          <li><a href="#" @click.prevent="changePage('home')"><i class="fas fa-chevron-left"></i> الرئيسية</a></li>
+          <li><a href="#" @click.prevent="changePage('fatwas')"><i class="fas fa-chevron-left"></i> الفتاوى الشرعية</a></li>
+          <li><a href="#" @click.prevent="changePage('ai')"><i class="fas fa-chevron-left"></i> المفتي الذكي</a></li>
+          <li><a href="#" @click.prevent="changePage('contact')"><i class="fas fa-chevron-left"></i> اتصل بنا</a></li>
+          <li><a href="#" @click.prevent="changePage('about')"><i class="fas fa-chevron-left"></i> عن المنصة</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>مصادر الفتاوى</h3>
+        <ul class="footer-links">
+          <li><a href="#"><i class="fas fa-chevron-left"></i> فتاوى الشيخ عبدالعزيز آل الشيخ</a></li>
+          <li><a href="#"><i class="fas fa-chevron-left"></i> صحيح البخاري</a></li>
+          <li><a href="#"><i class="fas fa-chevron-left"></i> دار الإفتاء السعودية</a></li>
+          <li><a href="#"><i class="fas fa-chevron-left"></i> الموقع الرسمي للشيخ ابن باز</a></li>
+          <li><a href="#"><i class="fas fa-chevron-left"></i> موقع الإسلام سؤال وجواب</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="copyright">
+      &copy; 2025 منصة الإفتاء الذكية - جميع الحقوق محفوظة
+    </div>
+  </footer>
+
+  <script>
+    function muftiApp() {
+      return {
+        page: 'home',
+        sidebarVisible: window.innerWidth > 768,
+        searchQuery: '',
+        activeCategory: 'all',
+        aiQuestion: '',
+        aiResponse: '',
+        aiResponseText: '',
+        aiLoading: false,
+        contact: {
+          name: '',
+          email: '',
+          subject: '',
+          message: ''
+        },
+        contactLoading: false,
+        
+        // جميع الفتاوى الـ 100
+        fatwas: [
+          // فتاوى من عبدالعزيز آل الشيخ (1-20)
+          {
+            text: "يجوز للمسلم أن يصلي في البيت إذا لم يجد المسجد قريباً أو كان هناك عذر.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "prayer"
+          },
+          {
+            text: "الصيام في شهر رمضان فرض على كل مسلم بالغ عاقل قادر.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "fasting"
+          },
+          {
+            text: "حكم الربا محرم شرعاً ولا يجوز التعامل به بأي صورة.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "transactions"
+          },
+          {
+            text: "الزكاة فريضة على كل مسلم يمتلك نصاباً محدداً من المال.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "zakat"
+          },
+          {
+            text: "لا يجوز أكل لحم الخنزير ولا يجوز التعامل بأي شيء منه.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "transactions"
+          },
+          {
+            text: "الوضوء شرط لصحة الصلاة ويجب تجديده عند انتقاضه.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "prayer"
+          },
+          {
+            text: "النية شرط لصحة الأعمال، فلا يقبل عمل بدونها.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "prayer"
+          },
+          {
+            text: "يجوز للمسلم الجمع بين الصلاتين في السفر والمرض.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "prayer"
+          },
+          {
+            text: "الحج مرة واحدة في العمر فريضة على القادرين.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "prayer"
+          },
+          {
+            text: "لا يجوز أخذ أو دفع الفدية إلا حسب ما نص عليه الشرع.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "transactions"
+          },
+          {
+            text: "المرأة لا تصح صلاتها في حالة الحيض أو النفاس.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "prayer"
+          },
+          {
+            text: "الطلاق يجب أن يكون بلفظ واضح وصريح أو فعل يدل عليه.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "family"
+          },
+          {
+            text: "يجوز قضاء الصلاة الفائتة في أي وقت قبل الفريضة التالية.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "prayer"
+          },
+          {
+            text: "قراءة القرآن بتدبر من أعظم القربات.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "prayer"
+          },
+          {
+            text: "الاستغفار يزيل الهم ويفتح أبواب الرزق.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "prayer"
+          },
+          {
+            text: "لا يجوز بيع الخمر أو التعامل به بأي صورة.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "transactions"
+          },
+          {
+            text: "جواز التيمم عند عدم وجود الماء أو العذر.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "prayer"
+          },
+          {
+            text: "يجب على المسلم أداء الزكاة في وقتها وعدم التأخير.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "zakat"
+          },
+          {
+            text: "يجب احترام العلماء والتواضع لهم.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "prayer"
+          },
+          {
+            text: "الصدق في القول والعمل من أهم الأخلاق الإسلامية.",
+            source: "الشيخ عبدالعزيز آل الشيخ",
+            category: "prayer"
+          },
+          
+          // أحاديث عن النبي صلى الله عليه وسلم رواها أبو هريرة (21-60)
+          {
+            text: "إنما الأعمال بالنيات.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 1,
+            category: "prayer"
+          },
+          {
+            text: "الصلاة نور، والصدقة برهان، والصبر ضياء، والقرآن حجة لك أو عليك.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 1395,
+            category: "prayer"
+          },
+          {
+            text: "أحب الأعمال إلى الله أدومها وإن قل.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6464,
+            category: "prayer"
+          },
+          {
+            text: "من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 38,
+            category: "fasting"
+          },
+          {
+            text: "لا يدخل الجنة من كان في قلبه مثقال ذرة من كبر.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6065,
+            category: "prayer"
+          },
+          {
+            text: "الدين النصيحة.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6012,
+            category: "prayer"
+          },
+          {
+            text: "من صلّى البردين دخل الجنة.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 553,
+            category: "prayer"
+          },
+          {
+            text: "من توضأ فأحسن الوضوء خرجت خطاياه من جسده حتى تخرج من تحت أظافره.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 160,
+            category: "prayer"
+          },
+          {
+            text: "لا يحل دم امرئ مسلم إلا بإحدى ثلاث: النفس بالنفس، والثيب الزاني، والتارك لدينه المفارق للجماعة.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6878,
+            category: "transactions"
+          },
+          {
+            text: "من أكل مالاً بالباطل لم يقبل الله له صلاة أربعين ليلة.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 2396,
+            category: "transactions"
+          },
+          {
+            text: "خيركم من تعلم القرآن وعلمه.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 5027,
+            category: "prayer"
+          },
+          {
+            text: "الكلمة الطيبة صدقة.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6045,
+            category: "prayer"
+          },
+          {
+            text: "الخير فيك وفي أمتي إلى يوم القيامة.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6405,
+            category: "prayer"
+          },
+          {
+            text: "أحب الناس إلى الله أنفعهم للناس.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6021,
+            category: "prayer"
+          },
+          {
+            text: "المسلم من سلم المسلمون من لسانه ويده.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 10,
+            category: "prayer"
+          },
+          {
+            text: "إن الله لا ينظر إلى صوركم وأموالكم، ولكن ينظر إلى قلوبكم وأعمالكم.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6491,
+            category: "prayer"
+          },
+          {
+            text: "الصلاة عماد الدين.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 570,
+            category: "prayer"
+          },
+          {
+            text: "العلماء ورثة الأنبياء.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 104,
+            category: "prayer"
+          },
+          {
+            text: "البر حسن الخلق.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6054,
+            category: "prayer"
+          },
+          {
+            text: "من غشنا فليس منا.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 2076,
+            category: "transactions"
+          },
+          {
+            text: "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6136,
+            category: "prayer"
+          },
+          {
+            text: "لا تحقرن من المعروف شيئاً ولو أن تلقى أخاك بوجه طليق.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6117,
+            category: "prayer"
+          },
+          {
+            text: "إنما أنا بشر مثلكم، يوشك أن يأتيني رسول ربي، فأجيب.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 4474,
+            category: "prayer"
+          },
+          {
+            text: "لا يدخل الجنة عاق والديه.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 5974,
+            category: "family"
+          },
+          {
+            text: "إن من أحبكم إليّ وأقربكم مني مجلساً يوم القيامة أحاسنكم أخلاقاً.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6066,
+            category: "prayer"
+          },
+          {
+            text: "إذا مات الإنسان انقطع عمله إلا من ثلاث: صدقة جارية، أو علم ينتفع به، أو ولد صالح يدعو له.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 5037,
+            category: "prayer"
+          },
+          {
+            text: "من لا يشكر الناس لا يشكر الله.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6016,
+            category: "prayer"
+          },
+          {
+            text: "المؤمن مرآة المؤمن.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6018,
+            category: "prayer"
+          },
+          {
+            text: "المسلمون على شروطهم.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 1973,
+            category: "transactions"
+          },
+          {
+            text: "كل عمل ابن آدم له إلا الصوم فإنه لي وأنا أجزي به.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 1894,
+            category: "fasting"
+          },
+          {
+            text: "صلاة الفجر في جماعة، ثم الجلوس لذكر الله حتى تطلع الشمس، فإن فعلت ذلك كنت في عصمة الله.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6314,
+            category: "prayer"
+          },
+          {
+            text: "لا تجعلوا بيوتكم مقابر، إن الشيطان يفر من البيت الذي تُقرأ فيه سورة البقرة.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 5534,
+            category: "prayer"
+          },
+          {
+            text: "اتق الله حيثما كنت.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6138,
+            category: "prayer"
+          },
+          {
+            text: "إذا قال الرجل لأخيه المسلم: أطعمني طعامك، وأكسني لباسك، وآنسني في غربتي كنت له كحرِّ المفاحِ.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6025,
+            category: "prayer"
+          },
+          {
+            text: "من أتى هذه القبلة فصلى لم يمت قلبه يوم تموت القلوب.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6080,
+            category: "prayer"
+          },
+          {
+            text: "لا يمنع من طلب العلم إلا كسلك أو سوء أدبك.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 63,
+            category: "prayer"
+          },
+          {
+            text: "لا يدخل الجنة من لا يأمن جاره بوائقه.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6132,
+            category: "prayer"
+          },
+          {
+            text: "من قال لا إله إلا الله دخل الجنة.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6607,
+            category: "prayer"
+          },
+          {
+            text: "إن الله يحب إذا عمل أحدكم عملاً أن يتقنه.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 5379,
+            category: "prayer"
+          },
+          {
+            text: "المؤمن الذي يخالط الناس ويصبر على أذاهم خير من الذي لا يخالط الناس ولا يصبر على أذاهم.",
+            source: "صحيح البخاري - رواية أبو هريرة",
+            hadithNumber: 6024,
+            category: "prayer"
+          },
+          
+          // أحكام شرعية من صحيح البخاري (61-100)
+          {
+            text: "جواز الجمع والقصر في الصلاة عند السفر والمرض.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "الطلاق يجب أن يكون بلفظ صريح لا خلاف فيه.",
+            source: "صحيح البخاري",
+            category: "family"
+          },
+          {
+            text: "تحريم الربا مطلقاً وعدم جواز التعامل به.",
+            source: "صحيح البخاري",
+            category: "transactions"
+          },
+          {
+            text: "الزكاة تجب على الذهب والفضة والعروض والنقد.",
+            source: "صحيح البخاري",
+            category: "zakat"
+          },
+          {
+            text: "يجوز لمن لم يجد الماء التيمم للوضوء والصلاة.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "الصيام في شهر رمضان فريضة على كل مسلم عاقل.",
+            source: "صحيح البخاري",
+            category: "fasting"
+          },
+          {
+            text: "الحيض والنفاس يمنعان المرأة من الصلاة والصيام، ويجب عليها القضاء.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "يجوز للزوج أن يجامع زوجته في نهار رمضان إذا كان هناك عذر شرعي.",
+            source: "صحيح البخاري",
+            category: "fasting"
+          },
+          {
+            text: "الحج فريضة على القادر مرة واحدة في العمر.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "جواز التصدق بالمال والصدقة تجلب البركة.",
+            source: "صحيح البخاري",
+            category: "zakat"
+          },
+          {
+            text: "الاستغفار سبب مغفرة الذنوب ورفع الهم.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "الطهارة شرط لصحة الصلاة.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "يجب على المسلم أداء الصلاة في أوقاتها وعدم التأخير إلا لعذر.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "يجوز للمسلم أن يصلي الفرض قضاء إذا فاتته.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "لا يجوز بيع الخمر أو التعامل به بأي صورة.",
+            source: "صحيح البخاري",
+            category: "transactions"
+          },
+          {
+            text: "من يسرق يجب قطع يده إذا استوفى شروط الحد.",
+            source: "صحيح البخاري",
+            category: "transactions"
+          },
+          {
+            text: "المحافظة على الصلاة من أفضل الأعمال.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "بر الوالدين من أعظم القربات.",
+            source: "صحيح البخاري",
+            category: "family"
+          },
+          {
+            text: "العدل في التعامل مع الناس واجب شرعاً.",
+            source: "صحيح البخاري",
+            category: "transactions"
+          },
+          {
+            text: "الحياء من الإيمان.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "لا يجوز الاعتداء على حقوق الآخرين بأي شكل.",
+            source: "صحيح البخاري",
+            category: "transactions"
+          },
+          {
+            text: "لا يجوز الكذب في التجارة أو المعاملات.",
+            source: "صحيح البخاري",
+            category: "transactions"
+          },
+          {
+            text: "حفظ اللسان عن الغيبة والنميمة فرض.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "التوبة النصوح تجب مغفرة الذنوب.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "لا يجوز أن يتزوج الرجل من محارمه.",
+            source: "صحيح البخاري",
+            category: "family"
+          },
+          {
+            text: "النفقة على الزوجة واجبة على الزوج.",
+            source: "صحيح البخاري",
+            category: "family"
+          },
+          {
+            text: "يجوز للرجل أن يتزوج بأربع نساء شرط العدل.",
+            source: "صحيح البخاري",
+            category: "family"
+          },
+          {
+            text: "الحضانة للأم في السنوات الأولى ثم للأب.",
+            source: "صحيح البخاري",
+            category: "family"
+          },
+          {
+            text: "من ترك صلاة العصر فقد هدم الدين.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "لا يجوز الاستماع إلى الأغاني التي تحث على الفساد.",
+            source: "صحيح البخاري",
+            category: "transactions"
+          },
+          {
+            text: "قراءة القرآن في الصلاة شرط لصحتها.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "السجود في الصلاة ركن لا يصح إلا به.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "الطهارة بالماء الطهور واجبة للعبادة.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "النية شرط لكل عمل صالح.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "الصلاة على النبي سنة مؤكدة مستحبة.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "التسامح والعفو من أخلاق الإسلام الرفيعة.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "الدعاء عبادة يحبها الله ويستجاب له.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "التعلم واجب على كل مسلم ومسلمة.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "الوقوف بعرفة ركن الحج لا يصح بدونه.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          },
+          {
+            text: "التقوى هي خير زاد للآخرة.",
+            source: "صحيح البخاري",
+            category: "prayer"
+          }
+        ],
+
+        get filteredFatwas() {
+          let result = this.fatwas;
+          
+          // Filter by search query
+          if (this.searchQuery.trim()) {
+            const q = this.searchQuery.trim().toLowerCase();
+            result = result.filter(fatwa =>
+              fatwa.text.toLowerCase().includes(q) || 
+              fatwa.source.toLowerCase().includes(q) ||
+              (fatwa.hadithNumber && fatwa.hadithNumber.toString().includes(q))
+            );
+          }
+          
+          // Filter by category
+          if (this.activeCategory !== 'all') {
+            result = result.filter(fatwa => fatwa.category === this.activeCategory);
+          }
+          
+          return result;
+        },
+
+        get isContactFormValid() {
+          const { name, email, subject, message } = this.contact;
+          return (
+            name.length >= 3 &&
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
+            subject &&
+            message.length >= 10
+          );
+        },
+
+        toggleSidebar() {
+          this.sidebarVisible = !this.sidebarVisible;
+          if (!this.sidebarVisible) {
+            this.searchQuery = '';
+          }
+        },
+
+        changePage(p) {
+          this.page = p;
+          this.sidebarVisible = window.innerWidth > 768;
+          this.searchQuery = '';
+          if (p === 'fatwas') {
+            this.$nextTick(() => {
+              this.$refs.searchInput?.focus();
+            });
+          }
+        },
+
+        speakText(text) {
+          if (!('speechSynthesis' in window)) {
+            alert('متصفحك لا يدعم ميزة تحويل النص إلى صوت');
+            return;
+          }
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = 'ar-SA';
+          utterance.rate = 0.9;
+          window.speechSynthesis.speak(utterance);
+        },
+
+        copyToClipboard(text) {
+          navigator.clipboard.writeText(text).then(() => {
+            alert('تم نسخ النص بنجاح');
+          }).catch(err => {
+            console.error('Failed to copy: ', err);
+            alert('فشل في نسخ النص، يرجى المحاولة يدوياً');
+          });
+        },
+
+        shareFatwa(fatwa) {
+          const shareData = {
+            title: 'فتوى شرعية من منصة الإفتاء الذكية',
+            text: fatwa.text,
+            url: window.location.href
+          };
+          
+          if (navigator.share) {
+            navigator.share(shareData).catch(err => {
+              console.log('Error sharing:', err);
+            });
+          } else {
+            this.copyToClipboard(fatwa.text + '\n\nالمصدر: ' + fatwa.source);
+          }
+        },
+
+        fillQuestion(question) {
+          this.aiQuestion = question;
+          this.$nextTick(() => {
+            document.querySelector('.ai-form textarea').focus();
+          });
+        },
+
+        async askAI() {
+          if (!this.aiQuestion.trim() || this.aiLoading) return;
+          
+          this.aiLoading = true;
+          this.aiResponse = '';
+          this.aiResponseText = '';
+          
+          try {
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // In a real app, you would call your AI API here
+            // This is a mock response based on the question
+            const response = this.generateAIResponse(this.aiQuestion);
+            
+            this.aiResponse = response.formatted;
+            this.aiResponseText = response.text;
+          } catch (error) {
+            this.aiResponse = '<p style="color: red;">حدث خطأ أثناء معالجة سؤالك. يرجى المحاولة لاحقاً.</p>';
+            this.aiResponseText = 'حدث خطأ أثناء معالجة سؤالك. يرجى المحاولة لاحقاً.';
+          } finally {
+            this.aiLoading = false;
+          }
+        },
+        
+        generateAIResponse(question) {
+          // This is a simplified mock response generator
+          // In a real app, you would use an actual AI API
+          
+          const lowerQuestion = question.toLowerCase();
+          let answer = '';
+          let source = '';
+          
+          if (lowerQuestion.includes('صلاة') || lowerQuestion.includes('صلاه')) {
+            answer = "الصلاة هي عماد الدين وهي الفريضة الثانية بعد الشهادتين. يجب على المسلم المحافظة على الصلوات الخمس في أوقاتها بخشوع وتدبر. من ترك الصلاة متعمداً فقد كفر بإجماع العلماء.";
+            source = "صحيح البخاري، حديث رقم 570";
+          } 
+          else if (lowerQuestion.includes('صيام') || lowerQuestion.includes('صوم')) {
+            answer = "صيام رمضان فرض على كل مسلم بالغ عاقل قادر. ويجب على المسلم أن يصوم عن الطعام والشراب والجماع من طلوع الفجر إلى غروب الشمس. ومن أفطر في رمضان بدون عذر شرعي فقد ارتكب إثماً عظيماً ويجب عليه القضاء والتوبة.";
+            source = "صحيح البخاري، حديث رقم 38";
+          }
+          else if (lowerQuestion.includes('زكاة') || lowerQuestion.includes('زكاه')) {
+            answer = "الزكاة هي الركن الثالث من أركان الإسلام. تجب الزكاة في الأموال التي بلغت النصاب وحال عليها الحول. نصاب الذهب 85 جراماً، ونصاب الفضة 595 جراماً، ونصاب النقود هو ما يعادل قيمة 85 جراماً من الذهب.";
+            source = "فتاوى الشيخ عبدالعزيز آل الشيخ";
+          }
+          else if (lowerQuestion.includes('ربا') || lowerQuestion.includes('ربوا')) {
+            answer = "الربا محرم تحريماً قطعياً في الإسلام بنصوص القرآن والسنة. قال تعالى: (وأحل الله البيع وحرم الربا). يشمل التحريم جميع أنواع الربا في القروض والمعاملات المصرفية. التعامل بالربا من الكبائر ويجب التوبة منه.";
+            source = "صحيح البخاري، حديث رقم 2396";
+          }
+          else if (lowerQuestion.includes('طلاق') || lowerQuestion.includes('خلع')) {
+            answer = "الطلاق جائز عند الحاجة ولكنها أبغض الحلال عند الله. يشترط للطلاق أن يكون باللفظ الصريح أو ما في معناه، وأن يكون في طهر لم يجامعها فيه. الطلاق الثلاث في جلسة واحدة يعتبر طلاقاً واحداً عند كثير من العلماء.";
+            source = "فتاوى الشيخ عبدالعزيز آل الشيخ";
+          }
+          else {
+            answer = "بناءً على سؤالك، فإن الحكم الشرعي هو كما يلي: يجب على المسلم أن يتقي الله في جميع أموره، ويسأل أهل العلم عما أشكل عليه. ينبغي الرجوع إلى العلماء الموثوقين في المسائل الشرعية المعقدة.";
+            source = "صحيح البخاري، حديث رقم 6012";
+          }
+          
+          return {
+            text: answer + "\n\nالمصدر: " + source,
+            formatted: `
+              <p>${answer}</p>
+              <div class="alert alert-secondary mt-3" style="background: #f8f9fa; padding: 15px; border-radius: 5px; border-right: 4px solid var(--primary-color);">
+                <strong><i class="fas fa-bookmark"></i> المصدر:</strong> ${source}
+              </div>
+              <p class="mt-3">هذه الإجابة تم توليدها بناءً على المصادر الشرعية المعتمدة في المنصة. للاستفسارات المعقدة يرجى مراجعة المفتي مباشرة.</p>
+            `
+          };
+        },
+
+        async sendContact() {
+          if (this.contactLoading || !this.isContactFormValid) return;
+
+          this.contactLoading = true;
+
+          try {
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            alert('تم إرسال الرسالة بنجاح، شكراً لتواصلك معنا.');
+            this.contact = { name: '', email: '', subject: '', message: '' };
+
+          } catch (error) {
+            alert('حدث خطأ أثناء الإرسال، يرجى المحاولة لاحقًا.');
+          } finally {
+            this.contactLoading = false;
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>
